@@ -1,48 +1,45 @@
-function calculatePayee(income) {
-  if(income <=24000) {
-      return "0";
-  }else if(income >24001 && income <=32333) {
-      return (income-24001)*0.1;
-  }else if(income >32334 && income <=500000 ) {
-      return (income-32334)*0.15;
-  }else if(income >500001 && income <800000) {
-      return (income-500001)*0.2;
-  }else (income > 800000) 
-      return (income- 500001)*0.3;
+
+
+// Define the tax rates
+const taxRates = [
+  { min: 0, max: 24000, rate: 0.1 },
+  { min: 24001, max: 32333, rate: 0.25 },
+  { min: 32334, max: 500000, rate: 0.3 },
+  { min: 500001, max: 800000, rate: 0.325 },
+  { min: 800001, max: Infinity, rate: 0.35 },
+];
+
+// Function to calculate PAYE (income tax)
+function calculatePAYE(annualIncome) {
+  let paye = 0;
+
+  for (const rate of taxRates) {
+    if (annualIncome > rate.max) {
+      paye += (rate.max - rate.min) * rate.rate;
+    } else if (annualIncome > rate.min) {
+      paye += (annualIncome - rate.min) * rate.rate;
+      break;
+    }
+  }
+
+  return paye;
 }
 
-function calculateNHIF(grossSalary) {
-  
+// Function to calculate deductions and net salary
+function calculateSalary(basicSalary, benefits) {
+  const annualIncome = (basicSalary * 12) + benefits;
 
-  if (grossSalary <= 24000) {
-    return 150;
-  } else if (grossSalary >24001 && grossSalary <=32333) {
-    return 300;
-  } else if (grossSalary >32334 && grossSalary <=500000) {
-    return 400;
-  } else if (grossSalary > 500001 && grossSalary <= 800000) {
-    return 500;
-  } else if (grossSalary > 800001) {
-    return 1500;
-  } 
-}
-function calculateNSSF(grossSalary) {
-  const nssfRate = 0.06
-  return grossSalary * nssfRate;
-}
-function calculateNetSalary(basicSalary,benefits) {
-  const grossSalary = basicSalary + benefits;
-  const payee = calculatePayee(grossSalary)
-  const nhifDeductions = calculateNHIF(grossSalary);
-  const nssfDeductions = calculateNSSF(grossSalary);
-  const netSalary = grossSalary - payee - nhifDeductions - nssfDeductions;
-  //const salaryDetails = calculateNetSalary(basicSalary, benefits);
+  const paye = calculatePAYE(annualIncome);
+  const nhifDeduction = Math.min(1700, 0.015 * basicSalary);
+  const nssfDeduction = Math.min(200, 0.06 * (basicSalary + benefits));
+  const grossSalary = annualIncome / 12;
+  const netSalary = grossSalary - (paye / 12) - nhifDeduction - nssfDeduction;
+
   return {
-      grossSalary,
-      payee,
-      nhifDeductions,
-      nssfDeductions,
-      netSalary,
-    };
-
+    grossSalary,
+    paye: paye / 12,
+    nhifDeduction,
+    nssfDeduction,
+    netSalary,
+  };
 }

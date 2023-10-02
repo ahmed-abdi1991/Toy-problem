@@ -1,14 +1,19 @@
-function SpeedDetector(speed){
-  let speedLimit = 80;
-  if(speed < speedLimit ) {
-    return 'ok'
-  } else if(speed > speedLimit) {
-    return '2points'
-  }
-  
-  let DemiritPoints = 5;
-  let DeductedPoints = Math.floor((speed - speedLimit)/DemiritPoints);
-  if(DeductedPoints > 12) {
-    return 'license suspended'
+
+function checkSpeed(speed) {
+  const speedLimit = 70;
+  const kmPerDemeritPoint = 5;
+
+  if (speed <= speedLimit) {
+    console.log("Ok");
+  } else {
+    const demeritPoints = Math.floor((speed - speedLimit) / kmPerDemeritPoint);
+    if (demeritPoints >= 12) {
+      console.log("License suspended");
+    } else {
+      console.log("Points: " + demeritPoints);
+    }
   }
 }
+checkSpeed(80);  // Output: Points: 2
+checkSpeed(65);  // Output: Ok
+checkSpeed(135); // Output: License suspended
